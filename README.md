@@ -21,10 +21,11 @@ as an unconditional dependency of every Flutter app.
   (`lib/src/router/route_guard.dart`) — a pure, framework-agnostic redirect
   chain. No `go_router` or Riverpod import; takes/returns plain path
   strings, so it's unit-testable without a running app.
-- `RouterListenableRef.watchAsListenable` / `AsyncValueListenable`
+- `RouterListenableRef.listenAsRefreshListenable` / `AsyncValueListenable`
   (`lib/src/router/router_listenable.dart`) — the one Riverpod-aware file:
-  turns a watched `AsyncValue` provider into a `Listenable` for
-  `GoRouter.refreshListenable`.
+  turns a Riverpod `AsyncValue` provider into a `Listenable` for
+  `GoRouter.refreshListenable`, via `ref.listen()` (not `ref.watch()` —
+  the whole point is to notify without triggering a router *rebuild*).
 - `RouterErrorScreen` (`lib/src/router/router_error_screen.dart`) — generic
   "route not found" screen for `GoRouter.errorBuilder`.
 
@@ -34,6 +35,10 @@ booleans instead of a hardcoded `AuthState` type, configurable paths
 instead of hardcoded route names).
 
 ## Usage
+
+The example below is a trimmed version of the working, compiled example app
+in [`example/`](example/) — `flutter analyze` and `flutter build apk
+--debug` both pass on it, so this pattern is verified, not aspirational.
 
 ```dart
 import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
@@ -45,7 +50,7 @@ part 'app_router.g.dart';
 
 @riverpod
 GoRouter appRouter(Ref ref) {
-  final authListenable = ref.watchAsListenable(authViewmodelProvider);
+  final authListenable = ref.listenAsRefreshListenable(authViewmodelProvider);
 
   return GoRouter(
     initialLocation: '/splash',
@@ -88,8 +93,10 @@ CompositeRouteGuard([
 
 ## Status
 
-Early extraction (v0.1.0) — router guard + Riverpod listenable wiring only.
-Not published to pub.dev; consumed via git/path dependency per app repo.
-Future candidates for this package (not yet built): a Riverpod-wired
-`SecureStorage`/`DioClient` provider bundle, a shared onboarding-state
-provider shape.
+v0.1.0 — router guard + Riverpod listenable wiring, all three source files
+covered by tests (24 tests total: route guards, the Riverpod bridge, and
+the error screen widget), plus a compiled/built `example/` app proving the
+README pattern actually works end to end. Not published to pub.dev;
+consumed via git/path dependency per app repo. Future candidates for this
+package (not yet built): a Riverpod-wired `SecureStorage`/`DioClient`
+provider bundle, a shared onboarding-state provider shape.

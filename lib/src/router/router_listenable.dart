@@ -1,7 +1,14 @@
-/// Riverpod-specific wiring for [CompositeRouteGuard]/[RouteGate]: turns a
-/// list of watched `AsyncValue` providers into a single `Listenable` for
+/// Riverpod-specific wiring for [CompositeRouteGuard]/[RouteGate]: bridges
+/// a watched `AsyncValue` provider into a `Listenable` for
 /// `GoRouter.refreshListenable`, since `GoRouter` doesn't know about
 /// Riverpod providers directly.
+///
+/// This is the accepted community pattern for this problem (see the
+/// long-running discussion at https://github.com/rrousselGit/riverpod/discussions/1357
+/// — "strategy 3": a `ValueNotifier`/`ChangeNotifier` updated via
+/// `ref.listen`, disposed via `ref.onDispose`). There's no dedicated
+/// pub.dev package for it; every production codebase hand-rolls a small
+/// bridge like this one.
 ///
 /// This is the one file in the package that imports `flutter_riverpod` —
 /// `route_guard.dart` stays framework-agnostic so it's unit-testable
@@ -14,37 +21,40 @@ import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 
 import 'route_guard.dart';
 
-/// Converts an [AsyncValue] into a [GateStatus] + `satisfied` bool pair,
-/// via [isSatisfied] applied to the data value once loaded.
-///
-/// Example: `GateStatus.fromAsync(authState, (s) => s.isAuthenticated)`.
+/// Derives a [GateStatus] from an [AsyncValue]'s loading/error/data shape.
+/// Callers still supply their own `satisfied`/`isAuthenticated` boolean
+/// separately (e.g. from `value.value?.isAuthenticated`) — this only
+/// reports whether the async operation itself has settled without error.
 extension GateStatusFromAsync on GateStatus {
   static GateStatus fromAsync<T>(AsyncValue<T> value) {
     if (value.isLoading) return GateStatus.loading;
     if (value.hasError) return GateStatus.error;
-    return GateStatus.satisfied; // caller still applies its own `satisfied`
-    // boolean separately (e.g. AuthRouteGate.isAuthenticated) — this only
-    // reports whether the async operation itself settled without error.
+    return GateStatus.satisfied;
   }
 }
 
-/// A `ValueNotifier<AsyncValue<T>>` kept in sync with a Riverpod provider
-/// via `ref.listen`, for use as (one leg of) `GoRouter.refreshListenable`.
+/// A `ValueNotifier<AsyncValue<T>>` kept in sync with a Riverpod provider,
+/// for use as (one leg of) `GoRouter.refreshListenable`.
 ///
-/// Call [RouterListenableRef.watchAsListenable] from inside a `@riverpod`
-/// router provider function instead of constructing this directly — it
-/// also wires up `ref.onDispose`.
+/// Construct via [RouterListenableRef.listenAsRefreshListenable] from
+/// inside a `@riverpod` router provider function rather than directly —
+/// that also wires up `ref.onDispose` and the `ref.listen` subscription.
+/// [ValueNotifier] already no-ops [notifyListeners] when the new value
+/// equals the old one (via `==`), so a settled `AsyncValue` that keeps
+/// resolving to an equal value won't cause redundant `GoRouter` refreshes.
 class AsyncValueListenable<T> extends ValueNotifier<AsyncValue<T>> {
   AsyncValueListenable(super.initial);
 }
 
-/// Convenience for building a router's `refreshListenable` from one or more
-/// Riverpod providers, inside a `@riverpod` function that has a `Ref`.
+/// Wires a Riverpod provider into an [AsyncValueListenable] via
+/// `ref.listen` (NOT `ref.watch` — this must not rebuild the router
+/// provider itself on every auth-state change, only push updates into the
+/// listenable so `GoRouter` re-runs its `redirect` callback).
 ///
 /// ```dart
 /// @riverpod
 /// GoRouter appRouter(Ref ref) {
-///   final authListenable = ref.watchAsListenable(authViewmodelProvider);
+///   final authListenable = ref.listenAsRefreshListenable(authViewmodelProvider);
 ///   return GoRouter(
 ///     refreshListenable: authListenable,
 ///     redirect: (context, state) => CompositeRouteGuard([
@@ -61,7 +71,7 @@ class AsyncValueListenable<T> extends ValueNotifier<AsyncValue<T>> {
 /// }
 /// ```
 extension RouterListenableRef on Ref {
-  AsyncValueListenable<T> watchAsListenable<T>(
+  AsyncValueListenable<T> listenAsRefreshListenable<T>(
     ProviderListenable<AsyncValue<T>> provider, {
     AsyncValue<T>? initial,
   }) {
@@ -77,7 +87,7 @@ extension RouterListenableRef on Ref {
 }
 
 /// Merges multiple [Listenable]s (e.g. several
-/// [RouterListenableRef.watchAsListenable] results) into one, for
+/// [RouterListenableRef.listenAsRefreshListenable] results) into one, for
 /// `GoRouter.refreshListenable`. Thin re-export of [Listenable.merge] so
 /// callers don't need a separate `flutter/foundation` import just for this.
 Listenable mergeRouterListenables(List<Listenable> listenables) =>
