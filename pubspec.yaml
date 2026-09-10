@@ -1,0 +1,40 @@
+name: antsf_flutter_starter
+description: >-
+  Opinionated app-starter building blocks for antsf Flutter projects:
+  an auth/onboarding route-guard for go_router, and Riverpod wiring
+  helpers. Depends on flutter_corekit for the underlying network/storage/
+  theme primitives; this package adds the navigation + state-management
+  opinions that flutter_corekit deliberately stays agnostic about.
+version: 0.1.0
+homepage: https://github.com/antsf/antsf_flutter_starter
+repository: https://github.com/antsf/antsf_flutter_starter
+issue_tracker: https://github.com/antsf/antsf_flutter_starter/issues
+# Depends on flutter_corekit via git ref (not yet on pub.dev) — this package
+# is consumed by app repos directly (path/git dependency), not published to
+# pub.dev itself, so a git dependency here is fine.
+publish_to: "none"
+
+environment:
+  sdk: ^3.13.2
+  flutter: ">=3.32.5"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_corekit:
+    git:
+      url: https://github.com/antsf/flutter_corekit.git
+      ref: main
+  go_router: ^16.2.5
+  flutter_riverpod: ^3.0.3
+  riverpod_annotation: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.15.1
+  riverpod_generator: ^3.0.0
+  go_router_builder: ^4.1.1
+
+flutter:
