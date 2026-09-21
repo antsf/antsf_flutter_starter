@@ -5,7 +5,7 @@ description: >-
   helpers. Depends on flutter_corekit for the underlying network/storage/
   theme primitives; this package adds the navigation + state-management
   opinions that flutter_corekit deliberately stays agnostic about.
-version: 0.1.0
+version: 0.2.0
 homepage: https://github.com/antsf/antsf_flutter_starter
 repository: https://github.com/antsf/antsf_flutter_starter
 issue_tracker: https://github.com/antsf/antsf_flutter_starter/issues

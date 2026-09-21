@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-09-21
 
 ### Changed
 - `antsf_flutter_starter.dart` now re-exports `flutter_corekit`, `go_router`,
@@ -8,6 +8,11 @@
   router/Riverpod files, so consumers get every dependency this package
   actually uses — including the underlying flutter_corekit primitives —
   from a single import.
+- Bumped dependency constraints so the package can be consumed by apps on
+  newer majors: `go_router` ^16.2.5 -> ^18.0.1, `flutter_riverpod` ^3.0.3 ->
+  ^3.4.3, `riverpod_annotation` ^3.0.0 -> ^4.0.7, `build_runner` ^2.15.1 ->
+  ^2.16.1, `riverpod_generator` ^3.0.0 -> ^4.0.9, `go_router_builder`
+  unpinned to ^4.1.1.
 
 ## 0.1.0 — 2026-09-10
 
