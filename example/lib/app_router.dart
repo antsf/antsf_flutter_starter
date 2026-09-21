@@ -1,5 +1,4 @@
 import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'auth_state.dart';

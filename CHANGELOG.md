@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- `antsf_flutter_starter.dart` now re-exports `go_router`, `flutter_riverpod`,
+  and `riverpod_annotation` alongside the package's own router/Riverpod
+  files, so consumers get every dependency this package actually uses from
+  a single import.
+
 ## 0.1.0 — 2026-09-10
 
 Initial extraction, generalized from `draiv_logistik_supplier`'s private
