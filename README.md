@@ -99,6 +99,20 @@ CompositeRouteGuard([
 ]).call(state.uri.path)
 ```
 
+## Code generation
+
+`build_runner`, `riverpod_generator`, and `go_router_builder` are
+`dev_dependencies` of this package, used to generate its own example app.
+They are **not** re-exported (Dart `export` only works for libraries with
+a public API — code generators are CLI tools invoked via
+`dart run build_runner build`, not imported), and `build_runner` runs
+per-package: a consuming app does not inherit them from this package.
+
+If your app also uses `@riverpod` or `@TypedGoRoute` codegen (not just the
+already-generated code this package ships), add all three to your own
+app's `dev_dependencies` — see `example/pubspec.yaml` in this repo for
+versions known to work together.
+
 ## Status
 
 v0.1.0 — router guard + Riverpod listenable wiring, all three source files
