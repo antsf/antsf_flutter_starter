@@ -29,6 +29,12 @@ as an unconditional dependency of every Flutter app.
 - `RouterErrorScreen` (`lib/src/router/router_error_screen.dart`) — generic
   "route not found" screen for `GoRouter.errorBuilder`.
 
+`antsf_flutter_starter.dart` also re-exports `go_router`, `flutter_riverpod`,
+and `riverpod_annotation` — every package this library actually depends on —
+so consuming apps can `import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';`
+alone and get the full routing/state-management surface used by the
+patterns below, without separately importing each dependency.
+
 Generalized from `draiv_logistik_supplier`'s `core/router/draiv_router.dart`
 (private `_handleRedirect` + `_ErrorScreen`), made app-agnostic (plain
 booleans instead of a hardcoded `AuthState` type, configurable paths
