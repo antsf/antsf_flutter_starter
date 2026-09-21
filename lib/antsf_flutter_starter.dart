@@ -1,11 +1,18 @@
-/// antsf_flutter_starter — opinionated app-starter building blocks that
-/// deliberately sit ABOVE `flutter_corekit` rather than inside it:
-/// navigation (auth/onboarding route guards for go_router) and Riverpod
-/// wiring helpers. See package description / README for the rationale
-/// (`flutter_corekit` stays a state-management-agnostic toolkit; this
-/// package is where the "how we build an app" opinions live).
+/// antsf_flutter_starter — opinionated app-starter building blocks that sit
+/// ABOVE `flutter_corekit`'s network/storage/theme primitives, adding the
+/// navigation (go_router auth/onboarding route guards) and state-management
+/// (Riverpod wiring) opinions that `flutter_corekit` deliberately stays
+/// agnostic about. See package description / README for the rationale.
+///
+/// Every package this library actually depends on — `flutter_corekit`,
+/// `go_router`, `flutter_riverpod`, and `riverpod_annotation` — is
+/// re-exported here, so a consuming app can set up a new project with a
+/// single import (`package:antsf_flutter_starter/antsf_flutter_starter.dart`)
+/// and get the full stack: network/storage/theme (via flutter_corekit) plus
+/// routing and state management, without separately importing each one.
 library;
 
+export 'package:flutter_corekit/flutter_corekit.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:go_router/go_router.dart';
 // riverpod_annotation re-exports a handful of code-generator-only symbols
@@ -19,6 +26,8 @@ export 'package:riverpod_annotation/riverpod_annotation.dart'
     hide
         ProviderElement,
         $AsyncClassModifier,
+        $AsyncNotifier,
+        $AsyncNotifierProvider,
         $AsyncNotifierProviderElement,
         $ClassFamilyOverride,
         $ClassProvider,
@@ -31,6 +40,8 @@ export 'package:riverpod_annotation/riverpod_annotation.dart'
         $FutureProvider,
         $FutureProviderElement,
         $LazyProxyListenable,
+        $Notifier,
+        $NotifierProvider,
         $NotifierProviderElement,
         $Observable,
         $Provider,
@@ -39,6 +50,7 @@ export 'package:riverpod_annotation/riverpod_annotation.dart'
         $Ref,
         $RefArg,
         $Result,
+        $StreamNotifier,
         $StreamNotifierProviderElement,
         $StreamProvider,
         $StreamProviderElement,
