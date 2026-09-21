@@ -266,7 +266,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: dbe90e1f1f4e958c9f9b40d89141a18e6accf641
+      resolved-ref: "65975b34a284f9552a0c3f374ce1a354f7adf7f0"
       url: "https://github.com/antsf/flutter_corekit.git"
     source: git
     version: "3.0.0"
@@ -922,6 +922,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.12"
+  timeago:
+    dependency: transitive
+    description:
+      name: timeago
+      sha256: b05159406a97e1cbb2b9ee4faa9fb096fe0e2dfcd8b08fcd2a00553450d3422e
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.1"
   typed_data:
     dependency: transitive
     description:
