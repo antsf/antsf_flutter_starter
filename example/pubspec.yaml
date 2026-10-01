@@ -1,10 +1,10 @@
 name: example
 description: "Working example of antsf_flutter_starter's route-guard + Riverpod wiring."
 publish_to: "none"
-version: 0.1.0
+version: 0.2.1
 
 environment:
-  sdk: ^3.13.2
+  sdk: ^3.13.1
 
 dependencies:
   flutter:

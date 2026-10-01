@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
 
 import 'app_router.dart';
 

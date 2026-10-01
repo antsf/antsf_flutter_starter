@@ -3,6 +3,27 @@ import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
 
 void main() {
   group('AuthRouteGate', () {
+    for (final status in [GateStatus.loading, GateStatus.error]) {
+      test(
+        '$status preserves public routes without opening protected routes',
+        () {
+          final gate = AuthRouteGate(
+            status: status,
+            isAuthenticated: false,
+            loginPath: '/login',
+            homePath: '/home',
+            splashPath: '/splash',
+            publicRoutes: const {'/privacy', '/register'},
+          );
+          expect(gate.evaluate('/privacy'), isNull);
+          expect(gate.evaluate('/register'), isNull);
+          expect(
+            gate.evaluate('/orders'),
+            status == GateStatus.loading ? '/splash' : '/login',
+          );
+        },
+      );
+    }
     test('loading: allows the splash/auth-only route, blocks others', () {
       final gate = AuthRouteGate(
         status: GateStatus.loading,
@@ -93,19 +114,21 @@ void main() {
       expect(gate.evaluate('/anything'), isNull);
     });
 
-    test('loading uses waitingPath, else redirectPathWhenLoadingBlocksRoute',
-        () {
-      const gate = SimpleRouteGate(
-        status: GateStatus.loading,
-        satisfied: false,
-        redirectPathWhenUnsatisfied: '/onboarding',
-        waitingPath: '/splash',
-        redirectPathWhenLoadingBlocksRoute: '/splash',
-      );
+    test(
+      'loading uses waitingPath, else redirectPathWhenLoadingBlocksRoute',
+      () {
+        const gate = SimpleRouteGate(
+          status: GateStatus.loading,
+          satisfied: false,
+          redirectPathWhenUnsatisfied: '/onboarding',
+          waitingPath: '/splash',
+          redirectPathWhenLoadingBlocksRoute: '/splash',
+        );
 
-      expect(gate.evaluate('/splash'), isNull);
-      expect(gate.evaluate('/home'), '/splash');
-    });
+        expect(gate.evaluate('/splash'), isNull);
+        expect(gate.evaluate('/home'), '/splash');
+      },
+    );
   });
 
   group('CompositeRouteGuard', () {

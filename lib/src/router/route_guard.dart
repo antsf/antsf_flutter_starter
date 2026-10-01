@@ -118,7 +118,8 @@ class AuthRouteGate extends RouteGate {
   final String loginPath;
   final String homePath;
 
-  /// Routes reachable regardless of auth state (e.g. login, register).
+  /// Routes reachable even while auth is loading or has failed (e.g. privacy).
+  /// If also listed in [authOnlyRoutes], authenticated users still go home.
   final Set<String> publicRoutes;
 
   /// Routes only meaningful while NOT authenticated (splash, login,
@@ -135,12 +136,12 @@ class AuthRouteGate extends RouteGate {
     final isPublicRoute = publicRoutes.contains(currentPath);
 
     if (status == GateStatus.loading) {
-      if (isAuthOnlyRoute) return null;
+      if (isAuthOnlyRoute || isPublicRoute) return null;
       return splashPath ?? loginPath;
     }
 
     if (status == GateStatus.error) {
-      if (currentPath == loginPath) return null;
+      if (currentPath == loginPath || isPublicRoute) return null;
       return loginPath;
     }
 

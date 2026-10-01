@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.2.1 — 2026-10-01
+
+Patch release preparation for GitHub-based OMS/PH app bootstrapping. Version
+source and notes are prepared in a PR; no tag or GitHub Release is implied.
+
+### Fixed
+- Restore generated function-provider and AsyncNotifier support through the
+  single starter import by re-exporting annotation generator-support symbols.
+- Keep configured public routes reachable during auth loading/error; protected
+  routes still redirect to splash/login, and authenticated auth-only precedence
+  remains unchanged.
+- Register disposal of the example's owned `GoRouter`; document that the router
+  owner must dispose it separately from its refresh listenable.
+
+### Changed
+- Lower package/example Dart minimum from `^3.13.2` to `^3.13.1`.
+- Pin Git dependency `flutter_corekit` to reviewed commit
+  `8995c06884e7ac4ae004db3b357f6da5c642f96d` (3.1.1), not mutable `main`.
+- Bump the example to 0.2.1, regenerate its provider parts and Git dependency
+  lockfile, and replace local-checkout setup with GitHub installation guidance.
+- Add prepared release notes and a smoke test reusing the example's actual
+  login/home/logout flow and router-disposal behavior.
+
+### Verification
+- 26 package tests and 1 example smoke test passed; actual code generation,
+  package/example analyzers, formatter and whitespace checks passed.
+- Independent final source/generated-part review passed without findings.
+- No native/device or platform-plugin verification is claimed.
+- See `RELEASE_NOTES.md` for dependency refs, private-repository access and
+  release boundaries. Local dependency overrides are not shipped.
+
 ## 0.2.0 — 2026-09-21
 
 ### Changed

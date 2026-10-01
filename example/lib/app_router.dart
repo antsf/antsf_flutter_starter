@@ -1,5 +1,4 @@
 import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'auth_state.dart';
 import 'routes.dart';
@@ -10,7 +9,7 @@ part 'app_router.g.dart';
 GoRouter appRouter(Ref ref) {
   final authListenable = ref.listenAsRefreshListenable(authProvider);
 
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: const SplashRoute().location,
     refreshListenable: authListenable,
     redirect: (context, state) => CompositeRouteGuard([
@@ -34,4 +33,6 @@ GoRouter appRouter(Ref ref) {
       onGoHome: () => context.go(const HomeRoute().location),
     ),
   );
+  ref.onDispose(router.dispose);
+  return router;
 }

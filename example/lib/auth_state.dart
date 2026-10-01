@@ -1,4 +1,4 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
 
 part 'auth_state.g.dart';
 
