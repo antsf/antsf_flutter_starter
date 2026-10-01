@@ -15,46 +15,11 @@ library;
 export 'package:flutter_corekit/flutter_corekit.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:go_router/go_router.dart';
-// riverpod_annotation re-exports a handful of code-generator-only symbols
-// (dollar-sign-prefixed, plus ProviderElement) that riverpod_generator's
-// generated code consumes internally -- they aren't meant to be part of a
-// public API, so flutter analyze flags re-exporting them here
-// (invalid_export_of_internal_element). Hidden explicitly rather than
-// switching to a narrow show list, so new *public* symbols added upstream
-// still flow through automatically.
-export 'package:riverpod_annotation/riverpod_annotation.dart'
-    hide
-        ProviderElement,
-        $AsyncClassModifier,
-        $AsyncNotifier,
-        $AsyncNotifierProvider,
-        $AsyncNotifierProviderElement,
-        $ClassFamilyOverride,
-        $ClassProvider,
-        $ClassProviderElement,
-        $Family,
-        $FamilyOverride,
-        $FunctionalFamilyOverride,
-        $FunctionalProvider,
-        $FutureModifier,
-        $FutureProvider,
-        $FutureProviderElement,
-        $LazyProxyListenable,
-        $Notifier,
-        $NotifierProvider,
-        $NotifierProviderElement,
-        $Observable,
-        $Provider,
-        $ProviderElement,
-        $ProviderPointer,
-        $Ref,
-        $RefArg,
-        $Result,
-        $StreamNotifier,
-        $StreamNotifierProviderElement,
-        $StreamProvider,
-        $StreamProviderElement,
-        $SyncValueProvider;
+// Generated parts share their consumer's imports, so generator-support
+// symbols must remain available through this single-import barrel. They are
+// an intentional annotation bridge, not stable hand-written application APIs.
+// ignore: invalid_export_of_internal_element
+export 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'src/router/route_guard.dart';
 export 'src/router/router_error_screen.dart';

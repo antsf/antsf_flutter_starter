@@ -55,7 +55,7 @@ class AsyncValueListenable<T> extends ValueNotifier<AsyncValue<T>> {
 /// @riverpod
 /// GoRouter appRouter(Ref ref) {
 ///   final authListenable = ref.listenAsRefreshListenable(authViewmodelProvider);
-///   return GoRouter(
+///   final router = GoRouter(
 ///     refreshListenable: authListenable,
 ///     redirect: (context, state) => CompositeRouteGuard([
 ///       AuthRouteGate(
@@ -68,6 +68,8 @@ class AsyncValueListenable<T> extends ValueNotifier<AsyncValue<T>> {
 ///     ]).call(state.uri.path),
 ///     routes: $appRoutes,
 ///   );
+///   ref.onDispose(router.dispose);
+///   return router;
 /// }
 /// ```
 extension RouterListenableRef on Ref {

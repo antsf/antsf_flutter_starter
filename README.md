@@ -44,15 +44,13 @@ instead of hardcoded route names).
 
 ## Usage
 
-The example below is a trimmed version of the working, compiled example app
-in [`example/`](example/) — `flutter analyze` and `flutter build apk
---debug` both pass on it, so this pattern is verified, not aspirational.
+The example below is a trimmed version of [`example/`](example/). Regenerate
+its parts with `dart run build_runner build`, then run `flutter analyze`
+and `flutter test`. Generated provider/notifier parts need only the starter
+import: its annotation bridge deliberately includes generator-support symbols.
 
 ```dart
 import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
 
@@ -60,7 +58,7 @@ part 'app_router.g.dart';
 GoRouter appRouter(Ref ref) {
   final authListenable = ref.listenAsRefreshListenable(authViewmodelProvider);
 
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/splash',
     refreshListenable: authListenable,
     redirect: (context, state) => CompositeRouteGuard([
@@ -81,6 +79,8 @@ GoRouter appRouter(Ref ref) {
       onGoHome: () => context.go('/home'),
     ),
   );
+  ref.onDispose(router.dispose);
+  return router;
 }
 ```
 
@@ -99,12 +99,70 @@ CompositeRouteGuard([
 ]).call(state.uri.path)
 ```
 
+Public routes such as `/privacy` and `/register` remain reachable while auth
+is loading or has failed; protected routes still redirect to splash/login.
+`authOnlyRoutes` continues to redirect authenticated users home, even when
+the same route is also public. The router provider owns the `GoRouter` it
+creates and must register its disposal; the listenable helper owns only its
+notifier, not the router.
+
+## Install from GitHub (OMS/PH app)
+
+Requires Dart **3.13.1 or newer below 4.0.0** and a compatible Flutter SDK.
+This repository is private: your local Git/SSH identity and CI must have access.
+Do not place credentials in a pubspec or URL.
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  antsf_flutter_starter:
+    git:
+      url: git@github.com:antsf/antsf_flutter_starter.git
+      ref: fix/independent-review-20260930
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.16.1
+  riverpod_generator: ^4.0.9
+  go_router_builder: ^4.1.1
+```
+
+While the 0.2.1 PR is open, the branch above exposes its release-preparation
+source. Pin the full starter commit SHA from the PR for reproducible apps and
+commit the application's `pubspec.lock`. Use `v0.2.1` only after approved merge
+and actual tag creation; a version bump alone does not create that ref.
+
+Starter pins corekit **3.1.1** to Git commit
+`8995c06884e7ac4ae004db3b357f6da5c642f96d`. You need no local package checkout,
+path dependency or `dependency_overrides`. Import the starter barrel to use the
+re-exported corekit APIs. If your app imports corekit directly, declare it as a
+direct dependency with exactly the same Git URL and commit as this pubspec.
+
+```sh
+flutter pub get
+dart run build_runner build
+flutter analyze
+flutter test
+```
+
+Copy the app-owned router/auth/route pattern from `example/` into your project;
+the starter supplies building blocks, not a CLI that generates an entire app.
+The generators belong in the consuming app's dev dependencies; they are not
+inherited from the starter package.
+
 ## Status
 
-v0.1.0 — router guard + Riverpod listenable wiring, all three source files
-covered by tests (24 tests total: route guards, the Riverpod bridge, and
-the error screen widget), plus a compiled/built `example/` app proving the
-README pattern actually works end to end. Not published to pub.dev;
-consumed via git/path dependency per app repo. Future candidates for this
+**0.2.1 release preparation** — GitHub-pinned corekit dependency, generated
+single-import providers/notifiers, public-route loading/error fixes and explicit
+router ownership. The source checkpoint passed 26 package tests, 1 example
+widget smoke test, actual code generation and clean package/example analyzers;
+independent final review found no remaining blockers. Native/device plugin
+verification is not claimed. See `CHANGELOG.md` and `RELEASE_NOTES.md`.
+
+Not published to pub.dev. This delivery opens a PR without automatic merge,
+version tag creation or GitHub Release publication.
+Future candidates for this
 package (not yet built): a Riverpod-wired `SecureStorage`/`DioClient`
 provider bundle, a shared onboarding-state provider shape.

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:antsf_flutter_starter/antsf_flutter_starter.dart';
 
 import 'screens.dart';
 
@@ -10,7 +10,8 @@ class SplashRoute extends GoRouteData with $SplashRoute {
   const SplashRoute();
 
   @override
-  Widget build(BuildContext context, GoRouterState state) => const SplashScreen();
+  Widget build(BuildContext context, GoRouterState state) =>
+      const SplashScreen();
 }
 
 @TypedGoRoute<LoginRoute>(path: '/login')
@@ -18,7 +19,8 @@ class LoginRoute extends GoRouteData with $LoginRoute {
   const LoginRoute();
 
   @override
-  Widget build(BuildContext context, GoRouterState state) => const LoginScreen();
+  Widget build(BuildContext context, GoRouterState state) =>
+      const LoginScreen();
 }
 
 @TypedGoRoute<HomeRoute>(path: '/home')
