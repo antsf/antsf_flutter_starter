@@ -29,17 +29,20 @@ Add your Pub cache `bin` directory to PATH to use the shorter `antsf_starter`
 command. Alternatively, run `dart run bin/antsf_starter.dart` from this package.
 No global activation is required for development/tests.
 
-### Install from Git after publishing this change to the repository
+### Install from Git
 
-This new package is not available at older starter commits. Once the change has
-been reviewed and pushed, substitute its full immutable commit SHA below:
+The generator implementation is available at the pushed commit below (PR #6).
+Older starter releases do not contain this package. This pins the implementation
+rather than following a mutable feature branch:
 
 ```sh
-dart pub global activate --source git https://github.com/antsf/antsf_flutter_starter.git --git-path packages/antsf_flutter_starter_cli --git-ref YOUR_REVIEWED_COMMIT_SHA
+dart pub global activate --source git https://github.com/antsf/antsf_flutter_starter.git --git-path packages/antsf_flutter_starter_cli --git-ref b6f897135013b7bb467fe43c8886d9244a93596e
 ```
 
-Documenting this command does not mean the change was committed/pushed or a Git
-installation from that future ref has been verified.
+Path activation was executed during validation; Git global activation itself is
+not claimed as tested. Version `0.1.0` is source-delivered, not published to a
+registry or tagged. See [CLI changelog](CHANGELOG.md) and
+[repository release notes](../../RELEASE_NOTES.md) for scope and limits.
 
 ## Create an application
 

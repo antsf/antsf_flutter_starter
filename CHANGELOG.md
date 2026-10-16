@@ -1,5 +1,32 @@
 # Changelog
 
+## Unreleased — Android-first flavor generator
+
+This delivery adds the separate `antsf_flutter_starter_cli` package at version
+`0.1.0`. The runtime starter remains `0.2.1`: its API and dependency constraints
+are unchanged. No tag, GitHub Release or registry publication is implied.
+
+### Added
+- Standalone Dart CLI for new corekit/Riverpod/router/MVVM apps with native
+  dev/prod flavors and optional stg, distinct identities and non-prod markers.
+- Independent per-flavor/platform version configuration, guarded run/build,
+  conflict-safe managed synchronization and journaled recovery.
+- Android PR/main CI that generates a real app, builds all three flavors and
+  inspects packaged IDs, labels and versions. iOS verification is deferred and
+  available only through manual dispatch with `verify_ios: true`.
+- Git round-trip regression with `core.autocrlf=true`, baseline tracking and
+  exact-byte attributes so guarded files survive an ordinary checkout.
+
+### Verification and limits
+- 60 CLI tests and 26 starter tests passed; real generated two-/three-flavor apps
+  passed codegen, analyzers and 16/17 tests respectively.
+- Actual Android dev/stg/prod debug APKs and a dev release APK built locally;
+  PR #6's initial CLI/Android CI run passed, including packaged metadata checks.
+- iOS remains configuration-checked / build-unverified. No production signing,
+  physical-device UI QA, live domain verification or automatic deployment is claimed.
+- See `RELEASE_NOTES.md`, the CLI's own `CHANGELOG.md`, and
+  `docs/verification/flutter-flavor-generator-20261016.md` for usage and evidence.
+
 ## 0.2.1 — 2026-10-01
 
 Patch release preparation for GitHub-based OMS/PH app bootstrapping. Version

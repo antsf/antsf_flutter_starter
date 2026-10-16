@@ -51,6 +51,14 @@ added to this runtime package. See the
 [approved specification](docs/specs/flutter-flavor-generator.md) for the safety
 contracts, independent per-flavor/platform versioning, and acceptance criteria.
 
+**Current delivery is Android-first.** Real dev/stg/prod APK builds and packaged
+metadata checks pass; iOS scaffolding is configuration-checked but build-unverified
+and its CI matrix is manual opt-in only. The separate CLI is version `0.1.0`;
+the runtime library remains `0.2.1`, with no API/dependency changes.
+
+See the [changelog](CHANGELOG.md), [release notes](RELEASE_NOTES.md), and
+[verification report](docs/verification/flutter-flavor-generator-20261016.md).
+
 ## Usage
 
 The example below is a trimmed version of [`example/`](example/). Regenerate
