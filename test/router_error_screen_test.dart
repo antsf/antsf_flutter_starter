@@ -56,32 +56,31 @@ void main() {
       expect(goHomeCalled, isFalse);
     });
 
-    testWidgets('falls back to onGoHome when canPop is true but onPop is null', (
-      tester,
-    ) async {
-      var goHomeCalled = false;
+    testWidgets(
+      'falls back to onGoHome when canPop is true but onPop is null',
+      (tester) async {
+        var goHomeCalled = false;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: RouterErrorScreen(
-            error: Exception('route not found'),
-            canPop: true,
-            onGoHome: () => goHomeCalled = true,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: RouterErrorScreen(
+              error: Exception('route not found'),
+              canPop: true,
+              onGoHome: () => goHomeCalled = true,
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.tap(find.byType(ElevatedButton));
-      await tester.pump();
+        await tester.tap(find.byType(ElevatedButton));
+        await tester.pump();
 
-      expect(goHomeCalled, isTrue);
-    });
+        expect(goHomeCalled, isTrue);
+      },
+    );
 
     testWidgets('shows a default message when error is null', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: RouterErrorScreen(error: null, onGoHome: () {}),
-        ),
+        MaterialApp(home: RouterErrorScreen(error: null, onGoHome: () {})),
       );
 
       expect(find.text('Terjadi kesalahan saat navigasi'), findsOneWidget);

@@ -53,9 +53,8 @@ class RouterErrorScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 error?.toString() ?? 'Terjadi kesalahan saat navigasi',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
