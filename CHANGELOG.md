@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased — Android-first flavor generator
+## 0.2.1 — 2026-10-16
 
 This delivery adds the separate `antsf_flutter_starter_cli` package at version
 `0.1.0`. The runtime starter remains `0.2.1`: its API and dependency constraints
-are unchanged. No tag, GitHub Release or registry publication is implied.
+are unchanged by the generator addition. The source release uses tag `v0.2.1`;
+neither package is published to pub.dev.
 
 ### Added
 - Standalone Dart CLI for new corekit/Riverpod/router/MVVM apps with native
@@ -27,10 +28,8 @@ are unchanged. No tag, GitHub Release or registry publication is implied.
 - See `RELEASE_NOTES.md`, the CLI's own `CHANGELOG.md`, and
   `docs/verification/flutter-flavor-generator-20261016.md` for usage and evidence.
 
-## 0.2.1 — 2026-10-01
-
-Patch release preparation for GitHub-based OMS/PH app bootstrapping. Version
-source and notes are prepared in a PR; no tag or GitHub Release is implied.
+The runtime portion also includes the following fixes prepared on 2026-10-01
+for GitHub-based OMS/PH app bootstrapping.
 
 ### Fixed
 - Restore generated function-provider and AsyncNotifier support through the

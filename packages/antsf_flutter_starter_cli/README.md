@@ -31,17 +31,16 @@ No global activation is required for development/tests.
 
 ### Install from Git
 
-The generator implementation is available at the pushed commit below (PR #6).
-Older starter releases do not contain this package. This pins the implementation
+The generator is included in source release `v0.2.1` (runtime 0.2.1, CLI 0.1.0).
+Older starter releases do not contain this package. Install the release tag
 rather than following a mutable feature branch:
 
 ```sh
-dart pub global activate --source git https://github.com/antsf/antsf_flutter_starter.git --git-path packages/antsf_flutter_starter_cli --git-ref b6f897135013b7bb467fe43c8886d9244a93596e
+dart pub global activate --source git https://github.com/antsf/antsf_flutter_starter.git --git-path packages/antsf_flutter_starter_cli --git-ref v0.2.1
 ```
 
-Path activation was executed during validation; Git global activation itself is
-not claimed as tested. Version `0.1.0` is source-delivered, not published to a
-registry or tagged. See [CLI changelog](CHANGELOG.md) and
+This is a Git source installation, not a pub.dev publication. For immutable
+automation, pin the full commit resolved by `v0.2.1`. See [CLI changelog](CHANGELOG.md) and
 [repository release notes](../../RELEASE_NOTES.md) for scope and limits.
 
 ## Create an application

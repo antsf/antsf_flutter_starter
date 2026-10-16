@@ -55,6 +55,8 @@ contracts, independent per-flavor/platform versioning, and acceptance criteria.
 metadata checks pass; iOS scaffolding is configuration-checked but build-unverified
 and its CI matrix is manual opt-in only. The separate CLI is version `0.1.0`;
 the runtime library remains `0.2.1`, with no API/dependency changes.
+Both are distributed from repository release tag **`v0.2.1`**; neither is
+published to pub.dev. Use the CLI README's Git installation command.
 
 See the [changelog](CHANGELOG.md), [release notes](RELEASE_NOTES.md), and
 [verification report](docs/verification/flutter-flavor-generator-20261016.md).

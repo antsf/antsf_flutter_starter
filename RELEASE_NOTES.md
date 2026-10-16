@@ -1,8 +1,9 @@
 # Release notes
 
-## Unreleased — Android-first flavor generator (CLI 0.1.0)
+## 0.2.1 — 2026-10-16: Android-first flavor generator (CLI 0.1.0)
 
-Prepared in [PR #6](https://github.com/antsf/antsf_flutter_starter/pull/6).
+Delivered through [PR #6](https://github.com/antsf/antsf_flutter_starter/pull/6)
+and source tag `v0.2.1` on its merged `main` commit.
 The runtime library stays at **0.2.1**, unchanged; the new **0.1.0 CLI** is a
 separate in-repository tool, not an added runtime dependency or a pub.dev release.
 
@@ -21,8 +22,16 @@ separate in-repository tool, not an added runtime dependency or a pub.dev releas
 
 Follow the [CLI README](packages/antsf_flutter_starter_cli/README.md) for path/Git
 installation, prerequisites, create/sync/version/run/build commands and recovery.
-Use an immutable reviewed commit for Git installation. Existing apps are not
-migrated automatically; this generator creates new projects.
+Install from the release tag:
+
+```sh
+dart pub global activate --source git https://github.com/antsf/antsf_flutter_starter.git --git-path packages/antsf_flutter_starter_cli --git-ref v0.2.1
+dart pub global run antsf_flutter_starter_cli:antsf_starter --help
+```
+
+For the runtime dependency in an existing app, use Git ref `v0.2.1` (or its full
+resolved commit) and commit the app's lockfile. Existing apps are not migrated
+automatically; the CLI creates new projects and refuses a non-empty destination.
 
 ### Verification and release boundary
 
@@ -33,12 +42,12 @@ migrated automatically; this generator creates new projects.
   PR's latest checks for any later documentation commits.
 - **iOS is deferred and build-unverified**. Its macOS matrix requires explicit
   manual dispatch with `verify_ios: true`; CocoaPods regressions are not Xcode proof.
-- No automatic merge, production deployment, signing setup, store upload, tag,
-  GitHub Release or registry publication is included. The existing published
-  GitHub Release is not replaced by these source notes.
+- Source distribution is the `v0.2.1` Git tag and GitHub Release. No pub.dev
+  publication, production app deployment, signing setup or store upload is
+  included. This does not replace application-level OMS integration/testing.
 - Detailed evidence: [verification report](docs/verification/flutter-flavor-generator-20261016.md).
 
-## 0.2.1 — historical release preparation
+## Historical 0.2.1 preparation — 2026-10-01
 
 Release preparation date: 2026-10-01. This patch prepares GitHub consumption for
 new OMS/PH apps, without a local corekit checkout or dependency override.

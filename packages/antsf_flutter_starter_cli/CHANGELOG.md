@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.1.0 — Unreleased
+## 0.1.0 — 2026-10-16 (bundled with source release v0.2.1)
 
-Initial source delivery in [PR #6](https://github.com/antsf/antsf_flutter_starter/pull/6).
+Initial source delivery in [PR #6](https://github.com/antsf/antsf_flutter_starter/pull/6),
+available through repository tag `v0.2.1`.
 This CLI is separate from the unchanged `antsf_flutter_starter` runtime 0.2.1.
 
 ### Added
@@ -25,7 +26,8 @@ This CLI is separate from the unchanged `antsf_flutter_starter` runtime 0.2.1.
 - iOS scaffolding and CocoaPods ownership/recovery tests are included, but actual
   iOS builds are unverified and its CI matrix is manual opt-in only.
 - No existing-app migration, production signing, live domain verification,
-  automatic deployment, tag, GitHub Release or registry publication is included.
+  automatic app deployment or registry publication is included. Install this
+  package from the repository's `v0.2.1` source tag, not a pub.dev version.
 
 See [usage](README.md), [repository release notes](../../RELEASE_NOTES.md), and
 [verification evidence](../../docs/verification/flutter-flavor-generator-20261016.md).
