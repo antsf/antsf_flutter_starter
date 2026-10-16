@@ -1,4 +1,53 @@
-# antsf_flutter_starter 0.2.1
+# Release notes
+
+## 0.2.1 — 2026-10-16: Android-first flavor generator (CLI 0.1.0)
+
+Delivered through [PR #6](https://github.com/antsf/antsf_flutter_starter/pull/6)
+and source tag `v0.2.1` on its merged `main` commit.
+The runtime library stays at **0.2.1**, unchanged; the new **0.1.0 CLI** is a
+separate in-repository tool, not an added runtime dependency or a pub.dev release.
+
+### What's included
+
+- New-app generation with native dev/prod flavors and optional stg, corekit,
+  Riverpod/router codegen, MVVM scaffold, distinct package IDs and visual markers.
+- Independent versions per flavor/platform, explicit flavor selection, transport
+  and logging safety, managed-file conflict detection, and recoverable sync.
+- Exact-byte Git attributes and tracked native baselines; normal Git checkout is
+  covered by a regression rather than relying on force-added files.
+- Android-first PR/main CI: real generation/tests and dev/stg/prod APK builds with
+  assertions against the packaged identity, display name and version metadata.
+
+### Install and use
+
+Follow the [CLI README](packages/antsf_flutter_starter_cli/README.md) for path/Git
+installation, prerequisites, create/sync/version/run/build commands and recovery.
+Install from the release tag:
+
+```sh
+dart pub global activate --source git https://github.com/antsf/antsf_flutter_starter.git --git-path packages/antsf_flutter_starter_cli --git-ref v0.2.1
+dart pub global run antsf_flutter_starter_cli:antsf_starter --help
+```
+
+For the runtime dependency in an existing app, use Git ref `v0.2.1` (or its full
+resolved commit) and commit the app's lockfile. Existing apps are not migrated
+automatically; the CLI creates new projects and refuses a non-empty destination.
+
+### Verification and release boundary
+
+- Local: 60 CLI tests, 26 starter tests; generated-app codegen/analyzers and 16/17
+  tests for two-/three-flavor apps; actual debug APKs for all flavors and dev release.
+- Initial [PR workflow](https://github.com/antsf/antsf_flutter_starter/actions/runs/38845268853)
+  passed CLI and Android, including real packaged metadata checks. Consult the
+  PR's latest checks for any later documentation commits.
+- **iOS is deferred and build-unverified**. Its macOS matrix requires explicit
+  manual dispatch with `verify_ios: true`; CocoaPods regressions are not Xcode proof.
+- Source distribution is the `v0.2.1` Git tag and GitHub Release. No pub.dev
+  publication, production app deployment, signing setup or store upload is
+  included. This does not replace application-level OMS integration/testing.
+- Detailed evidence: [verification report](docs/verification/flutter-flavor-generator-20261016.md).
+
+## Historical 0.2.1 preparation — 2026-10-01
 
 Release preparation date: 2026-10-01. This patch prepares GitHub consumption for
 new OMS/PH apps, without a local corekit checkout or dependency override.
@@ -40,8 +89,9 @@ and commit your app's `pubspec.lock`. Run `flutter pub get`,
 The single barrel import re-exports corekit; a direct corekit import additionally
 requires its own declared dependency with this exact Git URL and commit.
 
-This starter repository is private. Git/SSH access must work on each developer
-machine and CI runner. Never embed credentials in dependency URLs. The app owns
+The original preparation assumed private repository access; the repository was
+verified public on 2026-10-16. Git/SSH access must still work when using SSH URLs.
+Never embed credentials in dependency URLs. The app owns
 its generated providers/router/auth/route files; reuse the example pattern, not
 an assumption that the package generates a full project automatically.
 
