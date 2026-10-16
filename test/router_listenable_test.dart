@@ -87,23 +87,26 @@ void main() {
       expect(listenable.value.value, const _FakeAuthState());
     });
 
-    test('fires notifyListeners exactly once per distinct auth change', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test(
+      'fires notifyListeners exactly once per distinct auth change',
+      () async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
 
-      final listenable = container.read(_listenableProvider);
-      await Future<void>.delayed(Duration.zero);
+        final listenable = container.read(_listenableProvider);
+        await Future<void>.delayed(Duration.zero);
 
-      var notifyCount = 0;
-      listenable.addListener(() => notifyCount++);
+        var notifyCount = 0;
+        listenable.addListener(() => notifyCount++);
 
-      container.read(_fakeAuthProvider.notifier).login('token-1');
-      await Future<void>.delayed(Duration.zero);
+        container.read(_fakeAuthProvider.notifier).login('token-1');
+        await Future<void>.delayed(Duration.zero);
 
-      expect(notifyCount, 1);
-      expect(listenable.value.value?.isAuthenticated, isTrue);
-      expect(listenable.value.value?.token, 'token-1');
-    });
+        expect(notifyCount, 1);
+        expect(listenable.value.value?.isAuthenticated, isTrue);
+        expect(listenable.value.value?.token, 'token-1');
+      },
+    );
 
     test('propagates provider errors as AsyncError', () async {
       final container = ProviderContainer();
