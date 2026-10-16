@@ -1,0 +1,181 @@
+name: Flavor generator
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      verify_ios:
+        description: Run the deferred macOS/iOS verification matrix
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cli:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.1'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart pub get
+        working-directory: packages/antsf_flutter_starter_cli
+      - run: flutter analyze --fatal-infos
+      - run: flutter test
+      - run: dart format --output=none --set-exit-if-changed lib bin test
+        working-directory: packages/antsf_flutter_starter_cli
+      - run: dart analyze --fatal-infos
+        working-directory: packages/antsf_flutter_starter_cli
+      - name: Create real Android template for renderer compatibility tests
+        run: flutter create --no-pub --platforms android --org com.antsf "$RUNNER_TEMP/native_fixture"
+      - run: dart test
+        working-directory: packages/antsf_flutter_starter_cli
+        env:
+          ANTSF_ANDROID_TEMPLATE: ${{ runner.temp }}/native_fixture
+
+  android:
+    needs: cli
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.1'
+          channel: stable
+          cache: true
+      - run: dart pub get
+        working-directory: packages/antsf_flutter_starter_cli
+      - name: Generate, test and build all Android flavors
+        shell: bash
+        run: |
+          set -euo pipefail
+          cli="$GITHUB_WORKSPACE/packages/antsf_flutter_starter_cli/bin/antsf_starter.dart"
+          dart run "$cli" create "$RUNNER_TEMP/flavor_app" \
+            --name flavor_ci --org com.antsf --display-name 'Flavor CI' \
+            --dev-api https://dev.example.net --stg-api https://stg.example.net \
+            --prod-api https://api.example.net --starter-path "$GITHUB_WORKSPACE"
+          cd "$RUNNER_TEMP/flavor_app"
+          flutter analyze --fatal-infos
+          flutter test
+          dart run "$cli" version --flavor dev --platform android --name 1.0.4 --build 51
+          for flavor in dev stg prod; do
+            flutter build apk --debug --flavor "$flavor" 2>&1 | tee "$RUNNER_TEMP/android-$flavor.log"
+            tools=("$ANDROID_HOME"/build-tools/*/aapt)
+            metadata="$("${tools[-1]}" dump badging "build/app/outputs/flutter-apk/app-$flavor-debug.apk")"
+            printf '%s\n' "$metadata" | tee "$RUNNER_TEMP/android-$flavor-metadata.txt"
+            case "$flavor" in
+              dev) suffix='.dev'; label='[DEV] Flavor CI'; version='1.0.4-b51'; build='51' ;;
+              stg) suffix='.stg'; label='[STG] Flavor CI'; version='1.0.0-b1'; build='1' ;;
+              prod) suffix=''; label='Flavor CI'; version='1.0.0'; build='1' ;;
+            esac
+            [[ "$metadata" == *"name='com.antsf.flavorci$suffix'"* ]]
+            [[ "$metadata" == *"versionCode='$build'"* ]]
+            [[ "$metadata" == *"versionName='$version'"* ]]
+            [[ "$metadata" == *"application-label:'$label'"* ]]
+          done
+      - name: Retain Android validation diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-validation-diagnostics
+          path: |
+            ${{ runner.temp }}/android-*.log
+            ${{ runner.temp }}/android-*-metadata.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+  ios-simulator:
+    if: github.event_name == 'workflow_dispatch' && inputs.verify_ios
+    needs: cli
+    runs-on: macos-15
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [dev, stg, prod]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.1'
+          channel: stable
+          cache: true
+      - run: dart pub get
+        working-directory: packages/antsf_flutter_starter_cli
+      - name: Generate real three-flavor application
+        working-directory: packages/antsf_flutter_starter_cli
+        shell: bash
+        run: |
+          dart run bin/antsf_starter.dart create "$RUNNER_TEMP/flavor_app" \
+            --name flavor_ci --org com.antsf --display-name 'Flavor CI' \
+            --dev-api https://dev.example.net --stg-api https://stg.example.net \
+            --prod-api https://api.example.net --starter-path "$GITHUB_WORKSPACE"
+      - name: Analyze and test the generated application
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/flavor_app"
+          flutter analyze --fatal-infos
+          flutter test
+      - name: Exercise CocoaPods ownership, repeat sync and independent iOS version
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/flavor_app"
+          cli="$GITHUB_WORKSPACE/packages/antsf_flutter_starter_cli/bin/antsf_starter.dart"
+          dart run "$cli" version --flavor '${{ matrix.flavor }}' --platform ios --name 2.3.4 --build 7
+          pod install --project-directory=ios 2>&1 | tee "$RUNNER_TEMP/ios-pods.log"
+          dart run tool/flavor_guard.dart --flavor='${{ matrix.flavor }}' --platform=ios
+          dart run "$cli" sync
+          pod install --project-directory=ios 2>&1 | tee -a "$RUNNER_TEMP/ios-pods.log"
+          dart run tool/flavor_guard.dart --flavor='${{ matrix.flavor }}' --platform=ios
+      - name: Build actual unsigned iOS simulator application
+        shell: bash
+        run: |
+          set -o pipefail
+          cd "$RUNNER_TEMP/flavor_app"
+          flutter build ios --simulator --debug --no-codesign \
+            --flavor '${{ matrix.flavor }}' 2>&1 | tee "$RUNNER_TEMP/ios-build.log"
+      - name: Verify packaged iOS identity and target-owned versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          info="$RUNNER_TEMP/flavor_app/build/ios/iphonesimulator/Runner.app/Info.plist"
+          flavor='${{ matrix.flavor }}'
+          suffix=".$flavor"
+          case "$flavor" in
+            dev) label='[DEV] Flavor CI' ;;
+            stg) label='[STG] Flavor CI' ;;
+            prod) suffix=''; label='Flavor CI' ;;
+          esac
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$info")" = "com.antsf.flavorci$suffix"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleDisplayName' "$info")" = "$label"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$info")" = 2.3.4
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$info")" = 7
+      - name: Retain real build diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ios-${{ matrix.flavor }}-diagnostics
+          path: |
+            ${{ runner.temp }}/ios-build.log
+            ${{ runner.temp }}/ios-pods.log
+          if-no-files-found: warn
+          retention-days: 7

@@ -42,6 +42,15 @@ Generalized from `draiv_logistik_supplier`'s `core/router/draiv_router.dart`
 booleans instead of a hardcoded `AuthState` type, configurable paths
 instead of hardcoded route names).
 
+## Native-flavor project generator
+
+The separate [Dart CLI package](packages/antsf_flutter_starter_cli/README.md)
+creates new Android/iOS apps with corekit, Riverpod, routing, MVVM structure,
+native `dev`/`prod` flavors, and optional `stg`. Tooling dependencies are not
+added to this runtime package. See the
+[approved specification](docs/specs/flutter-flavor-generator.md) for the safety
+contracts, independent per-flavor/platform versioning, and acceptance criteria.
+
 ## Usage
 
 The example below is a trimmed version of [`example/`](example/). Regenerate
